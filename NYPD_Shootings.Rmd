@@ -1,0 +1,344 @@
+---
+title: "NYPD Shooting Incidents"
+author: "Ola Klingberg"
+date: "2023-06-13"
+output: html_document
+---
+
+# Sources of data
+### NYPD shootings data
+<https://catalog.data.gov/dataset/nypd-shooting-incident-data-historic>
+
+### Census data
+##### 2010
+<https://data.census.gov/table?g=040XX00US36_050XX00US36005,36047,36061,36081,36085&y=2010&d=DEC+Redistricting+Data+(PL+94-171)>
+
+##### 2020
+<https://data.census.gov/table?g=040XX00US36_050XX00US36005,36047,36061,36081,36085&y=2020&d=DEC+Redistricting+Data+(PL+94-171)>
+
+# R Libraries
+```{r libraries, message=FALSE, warnings=FALSE}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+```
+
+# Import and tidy up the data
+### NYPD shooting data
+```{r Import and clean NYPD shooting data, message=FALSE, warnings=FALSE}
+## Import the data.
+url <- "https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv?accessType=DOWNLOAD"
+shootings_raw <- read_csv(url)
+
+# Clean up column names.
+shootings <- clean_names(shootings_raw)
+
+# Select the variables that might be used in this study.
+shootings <- shootings %>%
+  select(c(occur_date, occur_time, boro, perp_age_group, perp_race,
+           perp_sex, vic_age_group, vic_race, vic_sex))
+
+# Turn the date into a date object.
+shootings <- shootings %>%
+  mutate(occur_date = mdy(occur_date))
+
+# Turn relevant character values into factors
+shootings$boro <- as.factor(shootings$boro)
+shootings$vic_age_group <- as.factor(shootings$vic_age_group)
+shootings$vic_race <- as.factor(shootings$vic_race)
+shootings$vic_sex <- as.factor(shootings$vic_sex)
+shootings$perp_age_group <- as.factor(shootings$perp_age_group)
+shootings$perp_race <- as.factor(shootings$perp_race)
+shootings$perp_sex <- as.factor(shootings$perp_sex)
+```
+
+### NYPD shooting data summary
+```{r NYPD data summary}
+summary(shootings)
+```
+
+As can be seen above, there are no missing values in the columns for:
+
+* date of incident (occur_date)
+* time of incident (occur_time)
+* the boro where the incident took place (boro)
+* the age group of the victim (vic_age_group)
+* the race of the victim (vic_race)
+* the sex of the victim (vic_sex)
+
+Values are missing in roughly a third of the rows for:
+
+* the age group of the perpetrator (perp_age_group)
+* the race of the perpetrator (perp_race)
+* the sex of the perpetrator (perp_sex)
+
+These variables will not be used in the initial analysis. If they are used in later analyses, a decision will have be taken about how to handle this large number of missing values.
+
+### Census data
+This data will be used later in the analysis to calculate shooting incidents per million inhabitants in each boro.
+
+```{r Import and clean census data, message=FALSE, warning=FALSE}
+# Import the data.
+census_2010 <- read_csv("./Data/2010_census_data.csv")
+census_2020 <- read_csv("./Data/2020_census_data.csv")
+
+# Clean up the column names.
+census_2010 <- clean_names(census_2010)
+census_2020 <- clean_names(census_2020)
+
+# Rename the columns with the boro names instead of the county names.
+# The col new_york contains state-wide numbers, so rename it new_york_state.
+census_2010 <- census_2010 %>% 
+  rename(new_york_state = new_york, 
+         bronx = bronx_county_new_york, 
+         brooklyn = kings_county_new_york, 
+         queens = queens_county_new_york, 
+         manhattan = new_york_county_new_york, 
+         staten_island = richmond_county_new_york)
+
+census_2020 <- census_2020 %>% 
+  rename(new_york_state = new_york, 
+         bronx = bronx_county_new_york, 
+         brooklyn = kings_county_new_york, 
+         queens = queens_county_new_york, 
+         manhattan = new_york_county_new_york, 
+         staten_island = richmond_county_new_york)
+```
+
+# Historical trend
+Let's look at how the number of shootings incidents in New York City has changed over the period covered by the data: 2006--2022.
+
+```{r Historical trend}
+# By year
+shootings %>% 
+  ggplot(aes(x = year(occur_date))) +
+  geom_bar() +
+  labs(title = "Shootings in New York City",
+       caption = "Data from the data.gov") +
+  xlab("Year") +
+  ylab("Number of shootings per year") 
+```
+
+As can be seen in the chart, there was a significant and fairly steady decline in the number of shootings starting in 2012 and lasting through 2017. The numbers then stayed level through 2019, the last year before the pandemic hit New York. The first two years of the pandemic, 2020 and 2021, saw a return to levels similar to those of 2011, i.e. before the decline started. For 2022, there is a significant drop in the numbers, but they still remain far above the numbers for 2017--2019.
+
+This finding agrees well with the much-publicized increase in violent crime since the beginning of the pandemic. It would be interesting to investigate further how the numbers for different types of shooting incidents changed: domestic violence, robberies, etc. The current data set on its own does not seem to allow for such a study.
+
+# Shootings by hour of the day
+```{r Shootings by hour of the day}
+# By hour of the day
+shootings %>%
+  ggplot(aes(x = hour(occur_time))) +
+  geom_bar() +
+  xlab("Hour of the day") +
+  ylab("Shooting per hour of the day, average per year 2006-2022") +
+  scale_x_continuous(breaks = c(-.5:23.5),
+                     labels = c(0:24)) +
+  scale_y_continuous(breaks = c(340, 680, 1020, 1360, 1700, 2040, 2680),
+                     labels = c(20, 40, 60, 80, 100, 120, 140))
+
+```
+
+As can be seen in the graph, shootings are mainly a night-time phenomenon, with the number of shootings between 11 PM and midnight being roughly ten times the number per hour between 7 AM and 10 AM.
+
+# Shootings per month of the year
+```{r Shootings by month of the year}
+# By month of the year
+shootings %>%
+  ggplot(aes(x = month(occur_date))) +
+  geom_bar() +
+  labs(title = "Shootings per month") +
+  xlab("Month") +
+  ylab("Shootings per month, average per year 2006-2022") +
+  scale_x_continuous(breaks = c(1:12),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May", "June",
+                              "July", "Aug", "Sep", "Oct", "Nov", "Dec")) +
+  scale_y_continuous(breaks = c(340, 680, 1020, 1360, 1700, 2040, 2380, 2720, 
+                                3060, 3400),
+                     labels = c(20, 40, 60, 80, 100, 120, 140, 160, 180, 200))
+```
+
+The graph shows us that shootings are more common in the summer. The average number of shootings in July is more than twice as high as the average number for February.
+
+Let's see if this pattern holds true for the two years immediately preceding the pandemic (2018, 2019), as well as for the first two years of the pandemic (2020, 2021).  
+
+```{r Shootings by month of the year, around beginning of pandemic}
+# By month of the year, for the years 2018--2022
+shootings %>%
+  filter(year(occur_date) >= 2018 & year(occur_date) <= 2021) %>% 
+  ggplot(aes(x = month(occur_date))) +
+  geom_bar() +
+  facet_wrap(~year(occur_date)) +
+  labs(title = "Shootings per month") +
+  xlab("Month") +
+  ylab("Shootings per month, 2018-2021") +
+  scale_x_continuous(breaks = c(1:12),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May", "June",
+                              "July", "Aug", "Sep", "Oct", "Nov", "Dec"))
+```
+
+As we saw earlier, the total numbers for 2018 and 2019 are much lower than the numbers for 2020 and 2021, but the we do see a similar distribution throughout the year as we saw in the data aggregated for the entire period covered by the data (2006--2022): In all the years in this graph, the month with the highest number of shootings is July.
+
+It's also interesting to note that the sharp increase in numbers in 2020 is not perfectly correlated with the beginning of the COVID lockdown in New York (which began around March 17, 2020). Rather, the numbers for April 2020 look similar to those for April 2018 and April 2019. In May 2020, we see a sharp increase compared with the same month in 2018 and 2019, but the most significant difference from 2018 and 2019 doesn't show up until the summer months: June, July, and August 2020 have close to three times as many shootings as the same months in 2018 and 2019.
+
+# Shootings by boro
+Let's now look at the number of shootings broken down by boro. The boros have very different populations, ranging from less than half a million in Staten Island to over 2.7 million in Brooklyn. We will look at shootings per million inhabitants and year in each of the five boros, as well as in New York City as a whole.
+
+We will look at the years 2010 and 2020, since we have census data from those years. We will also look at 2019, since it may be interesting to compare 2019 (the last year before the pandemic) with 2020 (the first year of the pandemic). To estimate population numbers for 2019, we will use a linear interpolation between the census numbers for 2010 and 2020.
+
+### Total number of shootings by boro for 2010, 2019, and 2020
+```{r Shootings by boro for 2010, 2019, and 2020}
+# Shootings 2010
+shootings_by_boro_2010 <-shootings %>% 
+  filter(year(occur_date) == 2010) %>% 
+  select(boro) %>% 
+  table() %>% 
+  transform() %>% 
+  rename(shootings_2010 = Freq)
+
+# Shootings 2019
+shootings_by_boro_2019 <-shootings %>% 
+  filter(year(occur_date) == 2019) %>% 
+  select(boro) %>% 
+  table() %>% 
+  transform() %>% 
+  rename(shootings_2019 = Freq)
+
+# Shootings 2020
+shootings_by_boro_2020 <-shootings %>% 
+  filter(year(occur_date) == 2020) %>% 
+  select(boro) %>% 
+  table() %>% 
+  transform() %>% 
+  rename(shootings_2020 = Freq)
+
+# Merge shootings for 2010, 2019, and 2020 into one data frame.
+summary_by_boro <- merge(shootings_by_boro_2010,
+                         shootings_by_boro_2019,
+                         by = "boro")
+summary_by_boro <- merge(summary_by_boro,
+                         shootings_by_boro_2020,
+                         by = "boro")
+
+# Write the boros with only the initial letter of each word capitalized.
+summary_by_boro$boro <- summary_by_boro$boro %>% str_to_title()
+
+summary_by_boro
+```
+### Population numbers for 2010, 2019, and 2020
+```{r}
+# 2010
+summary_by_boro <- summary_by_boro %>% 
+  mutate(pop_2010 = c(census_2010$bronx[1],
+                      census_2010$brooklyn[1],
+                      census_2010$manhattan[1],
+                      census_2010$queens[1],
+                      census_2010$staten_island[1]))
+
+# 2020
+summary_by_boro <- summary_by_boro %>% 
+  mutate(pop_2020 = c(census_2020$bronx[1],
+                      census_2020$brooklyn[1],
+                      census_2020$manhattan[1],
+                      census_2020$queens[1],
+                      census_2020$staten_island[1]))
+
+# Add a row for New York City, i.e. a summary of the five boros.
+summary_by_boro <- summary_by_boro %>% adorn_totals("row")
+
+# Turn the boros into row names
+row.names(summary_by_boro) <- summary_by_boro$boro
+summary_by_boro <- summary_by_boro %>% select(-boro)
+
+# Add a col for 2019, and interpolate between 2010 and 2020.
+summary_by_boro <- summary_by_boro %>% 
+  mutate(pop_2019 = round((summary_by_boro$pop_2010 + 9 * summary_by_boro$pop_2020) / 10))
+
+# Add cols for shootings per million people
+summary_by_boro <- summary_by_boro %>% 
+  mutate(shoot_per_mil_2010 = (shootings_2010 * 1000000) / pop_2010,
+         shoot_per_mil_2019 = (shootings_2019 * 1000000) / pop_2019,
+         shoot_per_mil_2020 = (shootings_2020 * 1000000) / pop_2020)
+
+summary_by_boro
+```
+
+To enable an easy-to-read visualization of the data in summary_by_boro, we'll build a new summary table, which contains the same data, but structured differently.
+
+```{r New summary table}
+boro <- c(rep("Bronx", 3), rep("Brooklyn", 3), rep("Manhattan", 3), 
+           rep("Queens", 3), rep("Staten Island", 3), rep("Total", 3))
+year <- rep(c("2010", "2019", "2020"), 6)
+shootings <- c(summary_by_boro["Bronx", "shootings_2010"],
+               summary_by_boro["Bronx", "shootings_2019"],
+               summary_by_boro["Bronx", "shootings_2020"],
+               summary_by_boro["Brooklyn", "shootings_2010"],
+               summary_by_boro["Brooklyn", "shootings_2019"],
+               summary_by_boro["Brooklyn", "shootings_2020"],
+               summary_by_boro["Manhattan", "shootings_2010"],
+               summary_by_boro["Manhattan", "shootings_2019"],
+               summary_by_boro["Manhattan", "shootings_2020"],
+               summary_by_boro["Queens", "shootings_2010"],
+               summary_by_boro["Queens", "shootings_2019"],
+               summary_by_boro["Queens", "shootings_2020"],
+               summary_by_boro["Staten Island", "shootings_2010"],
+               summary_by_boro["Staten Island", "shootings_2019"],
+               summary_by_boro["Staten Island", "shootings_2020"],
+               summary_by_boro["Total", "shootings_2010"],
+               summary_by_boro["Total", "shootings_2019"],
+               summary_by_boro["Total", "shootings_2020"])
+pop <- c(summary_by_boro["Bronx", "pop_2010"],
+         summary_by_boro["Bronx", "pop_2019"],
+         summary_by_boro["Bronx", "pop_2020"],
+         summary_by_boro["Brooklyn", "pop_2010"],
+         summary_by_boro["Brooklyn", "pop_2019"],
+         summary_by_boro["Brooklyn", "pop_2020"],
+         summary_by_boro["Manhattan", "pop_2010"],
+         summary_by_boro["Manhattan", "pop_2019"],
+         summary_by_boro["Manhattan", "pop_2020"],
+         summary_by_boro["Queens", "pop_2010"],
+         summary_by_boro["Queens", "pop_2019"],
+         summary_by_boro["Queens", "pop_2020"],
+         summary_by_boro["Staten Island", "pop_2010"],
+         summary_by_boro["Staten Island", "pop_2019"],
+         summary_by_boro["Staten Island", "pop_2020"],
+         summary_by_boro["Total", "pop_2010"],
+         summary_by_boro["Total", "pop_2019"],
+         summary_by_boro["Total", "pop_2020"])
+
+summary_by_boro_alt <- data.frame(boro, year, shootings, pop)
+
+summary_by_boro_alt <- summary_by_boro_alt %>% 
+  mutate(shoot_per_mil = (shootings * 1000000) / pop)
+
+summary_by_boro_alt
+```
+
+```{r Visualize shootings by boro for 2010, 2019, and 2020}
+# Visualize
+summary_by_boro_alt %>% 
+  ggplot(aes(x = boro, y = shoot_per_mil, fill = year)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  xlab("Boro") +
+  ylab("Shootings per million inhabitants") +
+  labs(title = "Shooting per million inhabitants in 2010, 2019, and 2020")
+```
+
+We see that for all three years, the Bronx is the boro with highest number of shooting incidents per million inhabitants, and Staten Island is the one with the lowest.
+
+All five boros show the pattern we have already seen for the city as a whole: the numbers for 2010 and 2020 are similar to each other, and the numbers for 2019 are much lower. 
+
+# Possible sources of bias
+### NYPD data
+Presumably, this data set only contains shootings known by the police. But in an urban setting like New York City, it seems likely that the great majority of shootings do come to the attention of the police.
+
+Worth noting is also that the total numbers for Staten Island are rather small: e.g. in 2019, there were only 26 shootings. With such small numbers, chance can have a large impact.
+
+### Census data
+The U.S. Census is in general regarded as reliable, but there is a possibility of undocumented immigrants being underreported, and this could skew the population numbers.
+
+### Personal bias
+The above analysis of the data is rather simple and straight-forward. I'm unable to think of any ways in which it could have been influenced by personal bias.
+
+
+
+
