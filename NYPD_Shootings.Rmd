@@ -113,7 +113,12 @@ Let's look at how the number of shootings incidents in New York City has changed
 shootings %>% 
   ggplot(aes(x = year(occur_date))) +
   geom_bar() +
-  labs(title = "Shootings in New York City",
+  # Divide the total numbers of shootings by 17 to get the yearly average.
+  geom_hline(yintercept = nrow(shootings) / 17, color = "red") +
+  annotate("text", 
+           x = 2015, 
+           y = (nrow(shootings) / 17) + 100, label = "Average", color = "red", size = 4) +
+  labs(title = "Shootings in New York City 2006-2022",
        caption = "Data from the data.gov") +
   xlab("Year") +
   ylab("Number of shootings per year") 
@@ -129,10 +134,17 @@ This finding agrees well with the much-publicized increase in violent crime sinc
 shootings %>%
   ggplot(aes(x = hour(occur_time))) +
   geom_bar() +
+  # Divide the total number of shootings by 24 to get the hourly average.
+  geom_hline(yintercept = nrow(shootings) / 24, color = "red") +
+  annotate("text", 
+           x = 10, 
+           y = (nrow(shootings) / 24) + 100, label = "Average", color = "red", size = 4) +
   xlab("Hour of the day") +
   ylab("Shooting per hour of the day, average per year 2006-2022") +
+  labs(title = "Shooting per hour of the day") +
   scale_x_continuous(breaks = c(-.5:23.5),
                      labels = c(0:24)) +
+  # Divide the label numbers by 17, to get numbers per year.
   scale_y_continuous(breaks = c(340, 680, 1020, 1360, 1700, 2040, 2680),
                      labels = c(20, 40, 60, 80, 100, 120, 140))
 
@@ -146,6 +158,10 @@ As can be seen in the graph, shootings are mainly a night-time phenomenon, with 
 shootings %>%
   ggplot(aes(x = month(occur_date))) +
   geom_bar() +
+  geom_hline(yintercept = nrow(shootings) / 12, color = "red") +
+  annotate("text", 
+           x = 2, 
+           y = (nrow(shootings) / 12) + 160, label = "Average", color = "red", size = 4) +
   labs(title = "Shootings per month") +
   xlab("Month") +
   ylab("Shootings per month, average per year 2006-2022") +
@@ -179,6 +195,52 @@ shootings %>%
 As we saw earlier, the total numbers for 2018 and 2019 are much lower than the numbers for 2020 and 2021, but the we do see a similar distribution throughout the year as we saw in the data aggregated for the entire period covered by the data (2006--2022): In all the years in this graph, the month with the highest number of shootings is July.
 
 It's also interesting to note that the sharp increase in numbers in 2020 is not perfectly correlated with the beginning of the COVID lockdown in New York (which began around March 17, 2020). Rather, the numbers for April 2020 look similar to those for April 2018 and April 2019. In May 2020, we see a sharp increase compared with the same month in 2018 and 2019, but the most significant difference from 2018 and 2019 doesn't show up until the summer months: June, July, and August 2020 have close to three times as many shootings as the same months in 2018 and 2019.
+
+## A closer look at the time around the beginning of the pandemic
+```{r Shooting numbers around the beginning of the pandemic}
+# 
+shootings_per_day_2019_03_17__2019_04_30 = 
+  nrow(shootings[shootings$occur_date >= '2019-03-17' & 
+                   shootings$occur_date <= '2019-04-30',]) / 45
+
+# 
+shootings_per_day_2019_05_01__2019_05_31 = 
+  nrow(shootings[shootings$occur_date >= '2019-05-01' & 
+                   shootings$occur_date <= '2019-05-31',]) / 31
+
+# 
+shootings_per_day_2019_06_01__2019_08_31 = 
+  nrow(shootings[shootings$occur_date >= '2019-06-01' & 
+                   shootings$occur_date <= '2019-08-31',]) / 92
+
+# 
+shootings_per_day_2020_03_17__2020_04_30 = 
+  nrow(shootings[shootings$occur_date >= '2020-03-17' & 
+                   shootings$occur_date <= '2020-04-30',]) / 45
+
+# 
+shootings_per_day_2020_05_01__2020_05_31 = 
+  nrow(shootings[shootings$occur_date >= '2020-05-01' & 
+                   shootings$occur_date <= '2020-05-31',]) / 31
+
+# 
+shootings_per_day_2020_06_01__2020_08_31 = 
+  nrow(shootings[shootings$occur_date >= '2020-06-01' & 
+                   shootings$occur_date <= '2020-08-31',]) / 92
+
+# Average number of daily shootings from beginning of lockdown 2020-03-17 
+# till end of April,
+# compared with the same period in 2019.
+shootings_per_day_2020_03_17__2020_04_30 / shootings_per_day_2019_03_17__2019_04_30
+
+# May 2020 compared with May 2019.
+shootings_per_day_2020_05_01__2020_05_31 / shootings_per_day_2019_05_01__2019_05_31
+
+# June, July, and August 2020 compared with the same 
+shootings_per_day_2020_06_01__2020_08_31 / shootings_per_day_2019_06_01__2019_08_31
+```
+
+We see that the first month and a half after the start of the lockdown in New York City (2020-03-17 -- 2020-04-30) actually had a slightly lower number of daily shootings than the same period in 2019. May 2020 had 1.69 times as many daily shootings as May 2019, and the summer months (June, July, August) of 2020 had a stunning 2.71 times as many daily shootings as the same period in 2019.
 
 # Shootings by boro
 Let's now look at the number of shootings broken down by boro. The boros have very different populations, ranging from less than half a million in Staten Island to over 2.7 million in Brooklyn. We will look at shootings per million inhabitants and year in each of the five boros, as well as in New York City as a whole.
@@ -332,6 +394,8 @@ All five boros show the pattern we have already seen for the city as a whole: th
 Presumably, this data set only contains shootings known by the police. But in an urban setting like New York City, it seems likely that the great majority of shootings do come to the attention of the police.
 
 Worth noting is also that the total numbers for Staten Island are rather small: e.g. in 2019, there were only 26 shootings. With such small numbers, chance can have a large impact.
+
+Furthermore, Manhattan surely has a much larger number of visitors than the other boros (both visitors from other boros and visitors from outside the city). This means that on any given day, the number of people moving around in Manhattan is larger than the number of people living there, probably much larger, while the same is not true for the other boros. It might therefore be misleading to compare shooting numbers with the number of inhabitants in a boro.
 
 ### Census data
 The U.S. Census is in general regarded as reliable, but there is a possibility of undocumented immigrants being underreported, and this could skew the population numbers.
