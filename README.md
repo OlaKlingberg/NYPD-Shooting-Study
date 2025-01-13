@@ -1,5 +1,5 @@
 # NYPD Shooting Incidents
-This project was developed for the course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
+This is the first of two projects developed for the course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
 
 ## Description
 The project presents an in-depth analysis of shooting incidents in New York City from 2006 to 2022, examing temporal and spatial patterns of gun violence.
@@ -8,10 +8,10 @@ The project presents an in-depth analysis of shooting incidents in New York City
 The data is provided by the City of New York and can be accessed at [NYPD Shooting Incident Data (Historic)](https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8/about_data).
 
 ## Key Features:
-* Data Preprocessing: Cleans and structures the dataset to facilitate accurate analysis, including handling missing values and ensuring consistency in data formats.
-* Temporal Analysis: Examines shooting incidents over time to identify trends, seasonal patterns, and anomalies.
-* Spatial Analysis: Compares shooting incidents per capita in New York's five boroughs.
-*	Demographic Analysis: Analyzes victim demographics to understand the populations most affected by gun violence.
+* **Data Preprocessing**: Cleans and structures the dataset to facilitate accurate analysis, including handling missing values and ensuring consistency in data formats.
+* **Temporal Analysis**: Examines shooting incidents over time to identify trends, seasonal patterns, and anomalies.
+* **Spatial Analysis**: Compares shooting incidents per capita in New York's five boroughs.
+*	**Demographic Analysis**: Analyzes victim demographics to understand the populations most affected by gun violence.
 
 ## Results (Summary)
 
