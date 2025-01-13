@@ -1,5 +1,35 @@
 # NYPD Shooting Incidents
-Project 1 for the course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
+This project was developed for the course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
+
+## Description
+The project presents an in-depth analysis of shooting incidents in New York City from 2006 to 2022, examing temporal and spatial patterns of gun violence.
+
+## Data Source
+The data is provided by the City of New York and can be accessed at [NYPD Shooting Incident Data (Historic)](https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8/about_data).
+
+## Key Features:
+* Data Preprocessing: Cleans and structures the dataset to facilitate accurate analysis, including handling missing values and ensuring consistency in data formats.
+* Temporal Analysis: Examines shooting incidents over time to identify trends, seasonal patterns, and anomalies.
+* Spatial Analysis: Compares shooting incidents per capita in New York's five boroughs.
+*	Demographic Analysis: Analyzes victim demographics to understand the populations most affected by gun violence.
+
+## Results (Summary)
+The number of shooting incidents trended down from 2006 to 2019, but jumped back up in 2020.
+![Shootings in New York city 2006-2022](https://github.com/user-attachments/assets/e273a722-d135-4acc-a461-19fa5f594053)
+
+Shootings are most frequent between 11 p.m. and 2 a.m. and lest frequent between 6 a.m. and 11 a.m. The difference is huge.
+![Shottings per hour of the day](https://github.com/user-attachments/assets/d349d0e0-5cd4-4a0b-9f55-74a73b38dcf1)
+
+Shootings are most frequent during the summer and least frequent in the winter.
+![Shootings per month](https://github.com/user-attachments/assets/026a566c-13af-4ee8-a45b-9537ef5f5e9c)
+
+In 2020, the first year of the pandemic, saw a large increase in shootings compared with 2018 and 2019, but the increase is not perfectly correlated with the start of the COVID lockdowns, which in New York City began around March 17, 2020. Rather, March and April of 2020 saw numbers similar to the corresponding months in 2018 and 2019; May shows a sharp increase, while the largest difference came in July and August, which had almost three times as many shootings as the same months in 2018 and 2019.
+
+![Shootings per month, 2018-2021](https://github.com/user-attachments/assets/ff3d8530-8ffe-4e3b-b0d5-09c43a215c0a)
+
+The Bronx was the borough with the highest number of shootings per million inhabitants, and Staten Island the one with the lowest. This comparison does not take into consideration that Manhattan has a much larger number of daily visitors than the other boroughs.
+
+![Shootings per million inhabitants](https://github.com/user-attachments/assets/70eddfab-343f-4279-a56a-75fef1888fc9)
 
 ## Repository Content
 * [Report in HTML format](https://olaklingberg.github.io/NYPD-Shooting-Study/NYPD_Shootings.html)
