@@ -11,7 +11,6 @@ The data is provided by the City of New York and can be accessed at [NYPD Shooti
 * **Data Preprocessing**: Cleans and structures the dataset to facilitate accurate analysis, including handling missing values and ensuring consistency in data formats.
 * **Temporal Analysis**: Examines shooting incidents over time to identify trends, seasonal patterns, and anomalies.
 * **Spatial Analysis**: Compares shooting incidents per capita in New York's five boroughs.
-*	**Demographic Analysis**: Analyzes victim demographics to understand the populations most affected by gun violence.
 
 ## Results (Summary)
 
