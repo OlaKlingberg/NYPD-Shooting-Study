@@ -243,12 +243,12 @@ shootings_per_day_2020_06_01__2020_08_31 / shootings_per_day_2019_06_01__2019_08
 We see that the first month and a half after the start of the lockdown in New York City (2020-03-17 -- 2020-04-30) actually had a slightly lower number of daily shootings than the same period in 2019. May 2020 had 1.69 times as many daily shootings as May 2019, and the summer months (June, July, August) of 2020 had a stunning 2.71 times as many daily shootings as the same period in 2019.
 
 # Shootings by borough
-Let's now look at the number of shootings broken down by boro. The boros have very different populations, ranging from less than half a million in Staten Island to over 2.7 million in Brooklyn. We will look at shootings per million inhabitants and year in each of the five boros, as well as in New York City as a whole.
+Let's now look at the number of shootings broken down by borough. The boroughs have very different populations, ranging from less than half a million in Staten Island to over 2.7 million in Brooklyn. We will look at shootings per million inhabitants and year in each of the five boroughs, as well as in New York City as a whole.
 
 We will look at the years 2010 and 2020, since we have census data from those years. We will also look at 2019, since it may be interesting to compare 2019 (the last year before the pandemic) with 2020 (the first year of the pandemic). To estimate population numbers for 2019, we will use a linear interpolation between the census numbers for 2010 and 2020.
 
-### Total number of shootings by boro for 2010, 2019, and 2020
-```{r Shootings by boro for 2010, 2019, and 2020}
+### Total number of shootings by borough for 2010, 2019, and 2020
+```{r Shootings by borough for 2010, 2019, and 2020}
 # Shootings 2010
 shootings_by_boro_2010 <-shootings %>% 
   filter(year(occur_date) == 2010) %>% 
@@ -375,7 +375,7 @@ summary_by_boro_alt <- summary_by_boro_alt %>%
 summary_by_boro_alt
 ```
 
-```{r Visualize shootings by boro for 2010, 2019, and 2020}
+```{r Visualize shootings by borough for 2010, 2019, and 2020}
 # Visualize
 summary_by_boro_alt %>% 
   ggplot(aes(x = boro, y = shoot_per_mil, fill = year)) +
@@ -385,9 +385,9 @@ summary_by_boro_alt %>%
   labs(title = "Shooting per million inhabitants in 2010, 2019, and 2020")
 ```
 
-We see that for all three years, the Bronx is the boro with highest number of shooting incidents per million inhabitants, and Staten Island is the one with the lowest.
+We see that for all three years, the Bronx is the borough with highest number of shooting incidents per million inhabitants, and Staten Island is the one with the lowest.
 
-All five boros show the pattern we have already seen for the city as a whole: the numbers for 2010 and 2020 are similar to each other, and the numbers for 2019 are much lower. 
+All five boroughs show the pattern we have already seen for the city as a whole: the numbers for 2010 and 2020 are similar to each other, and the numbers for 2019 are much lower. 
 
 # Possible sources of bias
 ### NYPD data
