@@ -16,7 +16,7 @@ The data is provided by the City of New York and can be accessed at [NYPD Shooti
 ## Results (Summary)
 The number of shooting incidents trended down from 2006 to 2019, but jumped back up in 2020.
 
-<img src="https://github.com/user-attachments/assets/e273a722-d135-4acc-a461-19fa5f594053" alt = "Shootings in New York City 2006-2022" width = "300" \>
+<img src="https://github.com/user-attachments/assets/e273a722-d135-4acc-a461-19fa5f594053" alt = "Shootings in New York City 2006-2022" width = "300" />
 
 
 ![Shootings in New York city 2006-2022](https://github.com/user-attachments/assets/e273a722-d135-4acc-a461-19fa5f594053)
