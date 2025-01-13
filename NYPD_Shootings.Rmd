@@ -140,8 +140,8 @@ shootings %>%
            x = 10, 
            y = (nrow(shootings) / 24) + 100, label = "Average", color = "red", size = 4) +
   xlab("Hour of the day") +
-  ylab("Shooting per hour of the day, average per year 2006-2022") +
-  labs(title = "Shooting per hour of the day") +
+  ylab("Shootings per hour of the day, average per year 2006-2022") +
+  labs(title = "Shootings per hour of the day") +
   scale_x_continuous(breaks = c(-.5:23.5),
                      labels = c(0:24)) +
   # Divide the label numbers by 17, to get numbers per year.
@@ -242,7 +242,7 @@ shootings_per_day_2020_06_01__2020_08_31 / shootings_per_day_2019_06_01__2019_08
 
 We see that the first month and a half after the start of the lockdown in New York City (2020-03-17 -- 2020-04-30) actually had a slightly lower number of daily shootings than the same period in 2019. May 2020 had 1.69 times as many daily shootings as May 2019, and the summer months (June, July, August) of 2020 had a stunning 2.71 times as many daily shootings as the same period in 2019.
 
-# Shootings by boro
+# Shootings by borough
 Let's now look at the number of shootings broken down by boro. The boros have very different populations, ranging from less than half a million in Staten Island to over 2.7 million in Brooklyn. We will look at shootings per million inhabitants and year in each of the five boros, as well as in New York City as a whole.
 
 We will look at the years 2010 and 2020, since we have census data from those years. We will also look at 2019, since it may be interesting to compare 2019 (the last year before the pandemic) with 2020 (the first year of the pandemic). To estimate population numbers for 2019, we will use a linear interpolation between the census numbers for 2010 and 2020.
@@ -399,10 +399,3 @@ Furthermore, Manhattan surely has a much larger number of visitors than the othe
 
 ### Census data
 The U.S. Census is in general regarded as reliable, but there is a possibility of undocumented immigrants being underreported, and this could skew the population numbers.
-
-### Personal bias
-The above analysis of the data is rather simple and straight-forward. I'm unable to think of any ways in which it could have been influenced by personal bias.
-
-
-
-
