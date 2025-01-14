@@ -1,5 +1,5 @@
 # NYPD Shooting Incidents
-This is the first of two projects developed for the course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
+This is the first of two projects developed for the introductory course *Data Science as a Field* (DTSA-5301) at University of Colorado Boulder.
 
 ## Description
 The project presents an in-depth analysis of shooting incidents in New York City from 2006 to 2022, examing temporal and spatial patterns of gun violence.
